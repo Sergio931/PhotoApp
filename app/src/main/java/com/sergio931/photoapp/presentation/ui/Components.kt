@@ -6,10 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +49,8 @@ fun AppBarComponent(
 
 @Composable
 fun PhotoListItem(
-    photo: Photo
+    photo: Photo,
+    onDeleteClick: () -> Unit
 ) {
     Card(modifier = Modifier) {
 
@@ -117,7 +117,18 @@ fun PhotoListItem(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
+
                 }
+            }
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete photo",
+                    tint = MaterialTheme.colors.onError
+                )
             }
 
         }

@@ -2,16 +2,16 @@ package com.sergio931.photoapp.presentation.ui
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -72,69 +72,24 @@ fun HomeScreen(
 }
 
 
-/*
-Photo listing view
- */
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PhotosListingComponent(
     itemList: MutableList<Photo>,
     homeViewModel: HomeScreenViewModel
 ) {
+    var photoList = itemList.toMutableStateList()
     LazyColumn(
         contentPadding = PaddingValues(top = 4.dp, bottom = 4.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(itemList.size) { i ->
-            val dismissState = rememberDismissState(
-                confirmStateChange = {
-                    if (it == DismissValue.DismissedToStart) {
-                        itemList.remove(itemList[i])
-                        homeViewModel.deletePhoto(itemList.toList())
-                    }
-
-                    true
-                }
-            )
-            SwipeToDismiss(
-                state = dismissState,
-                background = {
-                    val color = when (dismissState.dismissDirection) {
-                        DismissDirection.StartToEnd -> {
-                            Color.Transparent
-                        }
-                        DismissDirection.EndToStart -> {
-                            val r = 1f
-                            var g = 1f - (abs(dismissState.offset.value) / 255f) * 0.5f
-                            var b = 1f - (abs(dismissState.offset.value) / 255f) * 0.5f
-                            if (g <= 0f) {
-                                g = 0f
-                            }
-                            if (b <= 0f) {
-                                b = 0f
-                            }
-                            Color(red = r, green = g, blue = b)
-                        }
-                        else -> {
-                            Color.Transparent
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = color)
-                            .padding(10.dp),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Icon(imageVector = Icons.Filled.Delete, null, tint = Color.White)
-                    }
-                },
-                directions = setOf(DismissDirection.EndToStart),
-                dismissContent = {
-
-                    PhotoListItem(photo = itemList[i])
-                },
-            )
+        itemsIndexed(items = photoList) { index,item ->
+            PhotoListItem(photo = item,
+            onDeleteClick = {
+                photoList.remove(item)
+                homeViewModel.deletePhoto(photoList)
+            })
         }
 
     }
